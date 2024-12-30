@@ -38,7 +38,7 @@ func Set(nums []int) []int {
 		temp[i] = true
 	}
 	unique := []int{}
-	for k, _ := range temp {
+	for k := range temp {
 		unique = append(unique, k)
 	}
 	return unique
