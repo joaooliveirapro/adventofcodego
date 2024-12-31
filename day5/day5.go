@@ -74,18 +74,12 @@ func getRulesToConsider(update *string, ordRules *[]string) []Rule {
 	return rulesToConsider
 }
 
-func day5_part1() {
-	input := ReadInput("./day5/day5.input.txt")
-
-	ordRules := parseOrderingRules(&input)
-	updates := parseUpdates(&input)
-
+func findValudUpdates(updates *[]string, ordRules *[]string) []string {
 	validUpdates := []string{}
-
-	for _, u := range updates {
+	for _, u := range *updates {
 		isValid := true
 		// find what rules are to be considered for this updated
-		rules := getRulesToConsider(&u, &ordRules)
+		rules := getRulesToConsider(&u, ordRules)
 		// check if ALL those rules are followed. If not, then update is NOT valid
 		for _, rule := range rules {
 			// check if the index of num1 is GREATER than index of num2 (comes AFTER than num2)
@@ -100,9 +94,12 @@ func day5_part1() {
 			validUpdates = append(validUpdates, u)
 		}
 	}
+	return validUpdates
+}
 
+func calculateMiddleSum(updates []string) int {
 	middle := 0
-	for _, vu := range validUpdates {
+	for _, vu := range updates {
 		nums := strings.Split(vu, ",")
 		temp := []int{}
 		for _, nStr := range nums {
@@ -112,7 +109,16 @@ func day5_part1() {
 		middleIndex := len(temp) / 2
 		middle += temp[middleIndex]
 	}
+	return middle
+}
 
+func day5_part1() {
+	input := ReadInput("./day5/day5.input.txt")
+	ordRules := parseOrderingRules(&input)
+	updates := parseUpdates(&input)
+	validUpdates := findValudUpdates(&updates, &ordRules)
+
+	middle := calculateMiddleSum(validUpdates)
 	fmt.Printf("Middle=%d", middle)
 }
 
