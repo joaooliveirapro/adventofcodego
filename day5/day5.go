@@ -74,7 +74,7 @@ func getRulesToConsider(update *string, ordRules *[]string) []Rule {
 	return rulesToConsider
 }
 
-func findValudUpdates(updates *[]string, ordRules *[]string) []string {
+func findValidUpdates(updates *[]string, ordRules *[]string) []string {
 	validUpdates := []string{}
 	for _, u := range *updates {
 		isValid := true
@@ -112,21 +112,110 @@ func calculateMiddleSum(updates []string) int {
 	return middle
 }
 
+func fixUpdate(update []int, rules [][2]int) string {
+	// Build graph and in-degree map
+	graph := make(map[int][]int)
+	inDegree := make(map[int]int)
+	for _, num := range update {
+		inDegree[num] = 0
+	}
+
+	for _, rule := range rules {
+		from, to := rule[0], rule[1]
+		graph[from] = append(graph[from], to)
+		inDegree[to]++
+	}
+
+	// Topological sort using Kahn's algorithm
+	var sortedOrder []int
+	queue := []int{}
+
+	// Enqueue nodes with in-degree 0
+	for num, degree := range inDegree {
+		if degree == 0 {
+			queue = append(queue, num)
+		}
+	}
+
+	// Process the queue
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		sortedOrder = append(sortedOrder, current)
+
+		// Decrease in-degree of neighbors
+		for _, neighbor := range graph[current] {
+			inDegree[neighbor]--
+			if inDegree[neighbor] == 0 {
+				queue = append(queue, neighbor)
+			}
+		}
+	}
+	sortedOrderStr := strings.Builder{}
+	for p, i := range sortedOrder {
+		comma := ","
+		if p == len(sortedOrder)-1 {
+			comma = ""
+		}
+		sortedOrderStr.Write([]byte(fmt.Sprintf("%d%s", i, comma)))
+	}
+	return sortedOrderStr.String()
+}
+
 func day5_part1() {
 	input := ReadInput("./day5/day5.input.txt")
 	ordRules := parseOrderingRules(&input)
 	updates := parseUpdates(&input)
-	validUpdates := findValudUpdates(&updates, &ordRules)
-
+	validUpdates := findValidUpdates(&updates, &ordRules)
 	middle := calculateMiddleSum(validUpdates)
 	fmt.Printf("Middle=%d", middle)
 }
 
 func day5_part2() {
+	input := ReadInput("./day5/day5.input.txt")
+	ordRules := parseOrderingRules(&input)
+	updates := parseUpdates(&input)
+	validUpdates := findValidUpdates(&updates, &ordRules)
+	invalidUpdates := []string{}
+	// Find which updates are invalid
+	for _, u := range updates {
+		isValid := false
+		for _, vu := range validUpdates {
+			if u == vu {
+				isValid = true
+				break
+			}
+		}
+		if !isValid {
+			invalidUpdates = append(invalidUpdates, u)
+		}
+	}
+	fixedUpdates := []string{}
+	// Find what rules they break
+	for _, iu := range invalidUpdates {
+		rulesToConsider := getRulesToConsider(&iu, &ordRules)
 
+		update := []int{}
+		for _, char := range strings.Split(iu, ",") {
+			n, _ := strconv.Atoi(char)
+			update = append(update, n)
+		}
+
+		rules := [][2]int{}
+		for _, r := range rulesToConsider {
+			n1, _ := strconv.Atoi(r.num1)
+			n2, _ := strconv.Atoi(r.num2)
+			rules = append(rules, [2]int{n1, n2})
+		}
+
+		fixedup := fixUpdate(update, rules)
+		fixedUpdates = append(fixedUpdates, fixedup)
+	}
+
+	fmt.Println(calculateMiddleSum(fixedUpdates))
 }
 
 func main() {
-	day5_part1()
+	// day5_part1()
 	day5_part2()
 }
