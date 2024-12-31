@@ -246,8 +246,47 @@ func day4_part1() {
 	fmt.Printf("track: %v\n", track)
 }
 
-func day4_part2() {
+func getCharAt(input *[][]string, x, y int) string {
+	for yy, line := range *input {
+		for xx, char := range line {
+			if xx == x && yy == y {
+				return char
+			}
+		}
+	}
+	return ""
+}
 
+func checkMAS(input *[][]string, x, y int) bool {
+	c1 := getCharAt(input, x, y)
+	c2 := getCharAt(input, x+1, y+1)
+	c3 := getCharAt(input, x+2, y+2)
+
+	if fmt.Sprintf("%s%s%s", c1, c2, c3) == "SAM" || fmt.Sprintf("%s%s%s", c1, c2, c3) == "MAS" {
+		c4 := getCharAt(input, x+2, y)
+		c5 := getCharAt(input, x+1, y+1)
+		c6 := getCharAt(input, x, y+2)
+
+		if fmt.Sprintf("%s%s%s", c4, c5, c6) == "SAM" || fmt.Sprintf("%s%s%s", c4, c5, c6) == "MAS" {
+			return true
+		}
+	}
+
+	return false
+}
+
+func day4_part2() {
+	input := ReadInput("./day4/day4.input.txt")
+	track := 0
+	for y, line := range input {
+		for x := range line {
+			isMAS := checkMAS(&input, x, y)
+			if isMAS {
+				track++
+			}
+		}
+	}
+	fmt.Printf("Track: %d", track)
 }
 
 func generateRandom(n int) {
