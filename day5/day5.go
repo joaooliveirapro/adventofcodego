@@ -216,6 +216,6 @@ func day5_part2() {
 }
 
 func main() {
-	// day5_part1()
+	day5_part1()
 	day5_part2()
 }
