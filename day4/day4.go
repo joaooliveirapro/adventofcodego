@@ -275,11 +275,11 @@ func checkMAS(input *[][]string, x, y int) (bool, [][]int) {
 
 		if fmt.Sprintf("%s%s%s", c4, c5, c6) == "SAM" || fmt.Sprintf("%s%s%s", c4, c5, c6) == "MAS" {
 			return true, [][]int{
-				[]int{x, y},
-				[]int{x + 1, y + 1},
-				[]int{x + 2, y + 2},
-				[]int{x + 2, y},
-				[]int{x, y + 2},
+				{x, y},
+				{x + 1, y + 1},
+				{x + 2, y + 2},
+				{x + 2, y},
+				{x, y + 2},
 			}
 
 		}
@@ -305,9 +305,10 @@ func day4_part2() {
 	fmt.Printf("Track: %d\n", track)
 
 	// print with color
-	// printWithColors(&input, allCoords)
+	printWithColors(&input, allCoords)
 }
 
+//lint:ignore U1000 Ignore unused function
 func generateRandom(n int) {
 	ls := []string{"X", "M", "A", "S"}
 	max := big.NewInt(4)
