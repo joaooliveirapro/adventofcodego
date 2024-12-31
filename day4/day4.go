@@ -244,6 +244,12 @@ func day4_part1() {
 	input := ReadInput("./day4/day4.input.txt")
 	track, _ := findXmasCount(&input)
 	fmt.Printf("track: %v\n", track)
+
+	// Colourful touch
+	// 	printWithColors(&input, o)
+	// 	fmt.Println(track)
+	// 	fmt.Println()
+	// 	fmt.Println()
 }
 
 func getCharAt(input *[][]string, x, y int) string {
@@ -257,7 +263,7 @@ func getCharAt(input *[][]string, x, y int) string {
 	return ""
 }
 
-func checkMAS(input *[][]string, x, y int) bool {
+func checkMAS(input *[][]string, x, y int) (bool, [][]int) {
 	c1 := getCharAt(input, x, y)
 	c2 := getCharAt(input, x+1, y+1)
 	c3 := getCharAt(input, x+2, y+2)
@@ -268,25 +274,38 @@ func checkMAS(input *[][]string, x, y int) bool {
 		c6 := getCharAt(input, x, y+2)
 
 		if fmt.Sprintf("%s%s%s", c4, c5, c6) == "SAM" || fmt.Sprintf("%s%s%s", c4, c5, c6) == "MAS" {
-			return true
+			return true, [][]int{
+				[]int{x, y},
+				[]int{x + 1, y + 1},
+				[]int{x + 2, y + 2},
+				[]int{x + 2, y},
+				[]int{x, y + 2},
+			}
+
 		}
 	}
 
-	return false
+	return false, [][]int{}
 }
 
 func day4_part2() {
 	input := ReadInput("./day4/day4.input.txt")
 	track := 0
+
+	allCoords := map[string][][]int{}
 	for y, line := range input {
 		for x := range line {
-			isMAS := checkMAS(&input, x, y)
+			isMAS, coords := checkMAS(&input, x, y)
 			if isMAS {
+				allCoords[fmt.Sprintf("%d,%d", x, y)] = coords
 				track++
 			}
 		}
 	}
-	fmt.Printf("Track: %d", track)
+	fmt.Printf("Track: %d\n", track)
+
+	// print with color
+	// printWithColors(&input, allCoords)
 }
 
 func generateRandom(n int) {
@@ -340,10 +359,10 @@ func printWithColors(input *[][]string, o map[string][][]int) {
 		for x, char := range line {
 			if _, exists := allCoordsToPain[fmt.Sprintf("%d,%d", x, y)]; exists {
 				fmt.Printf("\033[%dm%s\033[0m", colorcode, char)
-				colorcode++
-				if colorcode > 33 {
-					colorcode = 31
-				}
+				// colorcode++
+				// if colorcode > 33 {
+				// 	colorcode = 31
+				// }
 			} else {
 				fmt.Print(char)
 			}
@@ -355,15 +374,4 @@ func printWithColors(input *[][]string, o map[string][][]int) {
 func main() {
 	day4_part1()
 	day4_part2()
-
-	// Colourful touch
-	// for range 2 {
-	// 	generateRandom(100)
-	// 	input := ReadInput("new.txt")
-	// 	track, o := findXmasCount(&input)
-	// 	printWithColors(&input, o)
-	// 	fmt.Println(track)
-	// 	fmt.Println()
-	// 	fmt.Println()
-	// }
 }
