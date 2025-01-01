@@ -30,7 +30,7 @@ func ReadInput(filename string) []string {
 	return lines
 }
 
-func getGuardXYPositionAndDirection(input *[]string) (int, int, string) {
+func getGuardPositionAndDirection(input *[]string) (int, int, string) {
 	for y, line := range *input {
 		for x, char := range line {
 			c := string(char)
@@ -43,35 +43,35 @@ func getGuardXYPositionAndDirection(input *[]string) (int, int, string) {
 }
 
 func getCharAt(input *[]string, x, y int) string {
-	for yy, line := range *input {
-		for xx, char := range line {
-			c := string(char)
-			if x == xx && y == yy {
-				return c
-			}
+	// Check if y is within bounds of the input
+	if y >= 0 && y < len(*input) {
+		line := (*input)[y]
+		// Check if x is within bounds of the line
+		if x >= 0 && x < len(line) {
+			return string(line[x])
 		}
 	}
-	return ""
+	return "" // Return empty string if out of bounds
 }
 
 func replaceCharAt(input *[]string, x, y int, r string) []string {
-	t := []string{}
+	t := make([]string, len(*input)) // Preallocate slice for efficiency
 	for yy, line := range *input {
-		temp := strings.Builder{}
-		for xx, char := range line {
-			if x == xx && y == yy {
-				temp.Write([]byte(r))
-			} else {
-				temp.Write([]byte(string(char)))
-			}
+		if yy == y {
+			var builder strings.Builder
+			builder.WriteString(line[:x])   // Add everything before the target character
+			builder.WriteString(r)          // Replace target character
+			builder.WriteString(line[x+1:]) // Add everything after the target character
+			t[yy] = builder.String()
+		} else {
+			t[yy] = line // Copy the unchanged line
 		}
-		t = append(t, temp.String())
 	}
 	return t
 }
 
 func MoveGuard(input *[]string) ([]string, bool) {
-	x, y, dir := getGuardXYPositionAndDirection(input)
+	x, y, dir := getGuardPositionAndDirection(input)
 	newX, newY, newDir := -1, -1, dir // assume dir doesn't change
 	outofbounds := false
 	if x != -1 && y != -1 {
