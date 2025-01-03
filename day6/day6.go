@@ -144,7 +144,6 @@ func day6_part1() {
 }
 
 func day6_part2() {
-
 }
 
 func main() {
