@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -37,6 +38,7 @@ func generateExpressions(numbers []int) []string {
 		}
 		helper(expr+" * "+fmt.Sprint(numbers[index+1]), index+1)
 		helper(expr+" + "+fmt.Sprint(numbers[index+1]), index+1)
+		helper(expr+" || "+fmt.Sprint(numbers[index+1]), index+1)
 	}
 	// Start with the first number
 	helper(fmt.Sprint(numbers[0]), 0)
@@ -62,9 +64,17 @@ func evaluateExpression(expr string) (int, error) {
 			n, _ := strconv.Atoi(t)
 			if op == "+" {
 				total += n
-			} else {
+			} else if op == "*" {
 				total *= n
+			} else { // Op = || (Concatenate prev + next num)
+				nextD, _ := strconv.Atoi(tokens[i-2])
+				if i > 3 {
+					nextD = total
+				}
+				newConcDig, _ := strconv.Atoi(fmt.Sprintf("%d%d", nextD, n))
+				total += newConcDig - nextD
 			}
+
 		}
 	}
 	return total, nil
@@ -85,13 +95,25 @@ func day7_part1() {
 			}
 		}
 	}
+
 	total := 0
+	file, err := os.Create("sols.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Write content to the file
+
 	for k, v := range sols {
 		total += v
-		fmt.Printf("%v = %d\n", k, v)
-	}
+		_, err = file.WriteString(fmt.Sprintf("%v=%v\n", v, k))
+		if err != nil {
+			panic(err)
+		}
 
-	fmt.Printf("total = %d", total)
+	}
+	fmt.Println("total=", total)
 }
 
 func day7_part2() {
