@@ -22,7 +22,7 @@ func min(nums []int) int {
 	return m
 }
 
-func area(l, w, h int) int {
+func area(l, w, h int) (int, int) {
 	// main
 	a := 2*l*w + 2*w*h + 2*h*l
 	// Min side
@@ -49,26 +49,31 @@ func area(l, w, h int) int {
 
 	// slack
 	a += m1 * m2
-	// fmt.Printf("%v Area=%d slack=%d, m1=%d,m2=%d\n", t2, a, m1*m2, m1, m2)
-	return a
+
+	// ribbon (part 2)
+	ribbon := 2*m1 + 2*m2 + l*w*h
+
+	return a, ribbon
 }
 
 func day2_part1() {
 	input := utils.ReadInput("./2015/day2/day2.input.txt")
 
 	t := 0
+	ribbon := 0
 	for _, dim := range input {
 		s := strings.Split(dim, "x")
 		l, _ := strconv.Atoi(string(s[0]))
 		w, _ := strconv.Atoi(string(s[1]))
 		h, _ := strconv.Atoi(string(s[2]))
-		t += area(l, w, h)
+		t_, ribbon_ := area(l, w, h)
+		t += t_
+		ribbon += ribbon_
 	}
-	fmt.Printf("t: %v\n", t)
+	fmt.Printf("t: %v r: %v\n", t, ribbon)
 }
 
 func main() {
 	day2_part1()
 	day2_part2()
-
 }
