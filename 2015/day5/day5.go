@@ -7,13 +7,10 @@ import (
 	"github.com/joaooliveirapro/adventofcodego/utils"
 )
 
-func main() {
-
-	input := utils.ReadInput("./2015/day5/day5.input.txt")
-
+func part1(input *[]string) {
 	nice := 0
 	m := map[string]any{}
-	for _, line := range input {
+	for _, line := range *input {
 
 		// Vowel rule
 		vowelCount := 0
@@ -58,4 +55,44 @@ func main() {
 
 	fmt.Printf("nice: %v\n", nice)
 
+}
+
+func part2(input *[]string) {
+	nice := 0
+	for _, line := range *input {
+		rule1 := false
+		// pair of any two letters
+		for _, a := range "abcdefghijklmnopqrstuvwxyz" {
+			for _, b := range "abcdefghijklmnopqrstuvwxyz" {
+				pair := fmt.Sprintf("%s%s", string(a), string(b))
+				if strings.Count(line, pair) > 1 {
+					rule1 = true
+				}
+			}
+		}
+
+		rule2 := false
+		// contains at least one letter which repeats with exactly one letter between them
+		for x := range line {
+			if x >= len(line)-2 {
+				break
+			}
+			if line[x] == line[x+2] {
+				rule2 = true
+			}
+		}
+
+		if rule1 && rule2 {
+			nice++
+		}
+
+	}
+	fmt.Printf("nice: %v\n", nice)
+
+}
+
+func main() {
+	input := utils.ReadInput("./2015/day5/day5.input.txt")
+	part1(&input)
+	part2(&input)
 }
