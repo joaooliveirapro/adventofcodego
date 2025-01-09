@@ -187,6 +187,27 @@ func getCoords(line string) [][]int {
 	return a
 }
 
+func gridToImageGrayscale(grid [][]int) *image.Gray {
+	height := len(grid)
+	width := len(grid[0])
+
+	// Create a new grayscale image
+	img := image.NewGray(image.Rect(0, 0, width, height))
+
+	// Set pixel colors based on the grid
+	for y, row := range grid {
+		for x, value := range row {
+			if value < 1 {
+				img.SetGray(x, y, color.Gray{Y: 0}) // Black for 1
+			} else {
+				y_ := (float32(grid[y][x]) / float32(54)) * 255
+				img.SetGray(x, y, color.Gray{Y: uint8(y_)}) // White for 0
+			}
+		}
+	}
+
+	return img
+}
 func part2(input *[]string) {
 	// Make grid of slices
 	grid := make([][]int, 1000) // outter slices
@@ -211,12 +232,32 @@ func part2(input *[]string) {
 	}
 
 	brightness := 0
+	max := 0
+	min := 0
 	for y, line := range grid {
 		for x := range line {
+			if grid[y][x] >= max {
+				max = grid[y][x]
+			} else {
+				min = grid[y][x]
+			}
 			brightness += grid[y][x]
 		}
 	}
 	fmt.Printf("brightness: %v\n", brightness)
+	fmt.Printf("max brightness: %v\n", max)
+	fmt.Printf("min: %v\n", min)
+	img := gridToImageGrayscale(grid)
+	// Save the image as a PNG file
+	outputFile, err := os.Create("./2015/day6/output2.png")
+	if err != nil {
+		panic(err)
+	}
+	defer outputFile.Close()
+	err = png.Encode(outputFile, img)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
