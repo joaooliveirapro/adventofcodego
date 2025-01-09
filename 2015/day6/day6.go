@@ -130,6 +130,50 @@ func toggle(line string, grid *[][]int) {
 	}
 }
 
+func turnon2(line string, grid *[][]int) {
+	coords := getCoords(line)
+	fromX, fromY := coords[0][0], coords[0][1]
+	toX, toY := coords[1][0], coords[1][1]
+
+	for y, row := range *grid {
+		for x := range row {
+			if x >= fromX && y >= fromY && x <= toX && y <= toY {
+				(*grid)[y][x] += 1
+			}
+		}
+	}
+}
+
+func turnoff2(line string, grid *[][]int) {
+	coords := getCoords(line)
+	fromX, fromY := coords[0][0], coords[0][1]
+	toX, toY := coords[1][0], coords[1][1]
+
+	for y, row := range *grid {
+		for x := range row {
+			if x >= fromX && y >= fromY && x <= toX && y <= toY {
+				if (*grid)[y][x] > 0 {
+					(*grid)[y][x] -= 1
+				}
+			}
+		}
+	}
+}
+
+func toggle2(line string, grid *[][]int) {
+	coords := getCoords(line)
+	fromX, fromY := coords[0][0], coords[0][1]
+	toX, toY := coords[1][0], coords[1][1]
+
+	for y, row := range *grid {
+		for x := range row {
+			if x >= fromX && y >= fromY && x <= toX && y <= toY {
+				(*grid)[y][x] += 2
+			}
+		}
+	}
+}
+
 func getCoords(line string) [][]int {
 	// returns [[x1 y1], [x2, y2]]
 	a := [][]int{}
@@ -144,10 +188,39 @@ func getCoords(line string) [][]int {
 }
 
 func part2(input *[]string) {
+	// Make grid of slices
+	grid := make([][]int, 1000) // outter slices
+	for i := range grid {
+		grid[i] = make([]int, 1000) // inner slices
+	}
 
+	// Read input lines
+	for _, line := range *input {
+		// turn on (1)
+		if strings.Contains(line, "turn on") {
+			turnon2(line, &grid)
+		}
+		// turn off (0)
+		if strings.Contains(line, "turn off") {
+			turnoff2(line, &grid)
+		}
+		// toggle
+		if strings.Contains(line, "toggle") {
+			toggle2(line, &grid)
+		}
+	}
+
+	brightness := 0
+	for y, line := range grid {
+		for x := range line {
+			brightness += grid[y][x]
+		}
+	}
+	fmt.Printf("brightness: %v\n", brightness)
 }
 
 func main() {
 	input := utils.ReadInput("./2015/day6/day6.input.txt")
 	part1(&input)
+	part2(&input)
 }
