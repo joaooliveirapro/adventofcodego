@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -41,6 +45,43 @@ func part1(input *[]string) {
 		// fmt.Println()
 	}
 	fmt.Printf("lit: %v\n", lit)
+
+	// save as image
+	img := gridToImage(grid)
+	// Save the image as a PNG file
+	outputFile, err := os.Create("./2015/day6/output.png")
+	if err != nil {
+		panic(err)
+	}
+	defer outputFile.Close()
+
+	err = png.Encode(outputFile, img)
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+// Converts a 2D grid of 1s and 0s to an image
+func gridToImage(grid [][]int) *image.Gray {
+	height := len(grid)
+	width := len(grid[0])
+
+	// Create a new grayscale image
+	img := image.NewGray(image.Rect(0, 0, width, height))
+
+	// Set pixel colors based on the grid
+	for y, row := range grid {
+		for x, value := range row {
+			if value == 1 {
+				img.SetGray(x, y, color.Gray{Y: 0}) // Black for 1
+			} else {
+				img.SetGray(x, y, color.Gray{Y: 255}) // White for 0
+			}
+		}
+	}
+
+	return img
 }
 
 func turnon(line string, grid *[][]int) {
