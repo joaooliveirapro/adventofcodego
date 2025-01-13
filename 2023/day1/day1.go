@@ -41,11 +41,48 @@ func part1(input *[]string) {
 	fmt.Printf("sum: %v\n", sum)
 }
 
-func part2(input *[]string) {
+func getNums2(line string) int {
+	sum := 0
 
+	k := []string{
+		"one", "two", "three",
+		"four", "five", "six",
+		"seven", "eight", "nine",
+	}
+	lowest := 10000
+
+	highest := 0
+	for _, numStr := range k {
+		i := strings.Index(line, numStr)
+		if i > -1 {
+			if i < lowest {
+				lowest = i
+			}
+
+			if i > highest {
+				highest = i
+			}
+		}
+	}
+
+	//
+	// for x := range /line {
+
+	// }
+
+	return sum
+}
+
+func part2(input *[]string) {
+	sum := 0
+	for _, line := range *input {
+		sum += getNums2(line)
+	}
+	fmt.Printf("sum: %v\n", sum)
 }
 
 func main() {
 	input := utils.ReadInput("./2023/day1/day1.input.txt")
 	part1(&input)
+	part2(&input)
 }
