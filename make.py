@@ -31,6 +31,7 @@ func part2(input *[]string) {{
 func main() {{
 	input := utils.ReadInput("./{top_folder}/{subfolder}/{subfolder}.input.txt")
 	part1(&input)
+	part2(&input)
 }}"""
 
     with open(go_file_path, mode='w') as gofile:
